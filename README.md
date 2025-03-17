@@ -1,119 +1,59 @@
-# 🛢️ MS SQL Server Docker Kurulumu
+# MSSQL Docker Setup
 
-Bu repository, Docker kullanarak Microsoft SQL Server'ı hızlı bir şekilde çalıştırmanızı sağlayan yapılandırmayı içerir.
+This project contains Docker configuration for running Microsoft SQL Server in a container.
 
-## 📋 İçerik
+## Quick Start
 
-- [Gereksinimler](#gereksinimler)
-- [Kurulum](#kurulum)
-- [SQL Server Sürümleri](#sql-server-sürümleri)
-- [Bağlantı Bilgileri](#bağlantı-bilgileri)
-- [Volume Yönetimi](#volume-yönetimi)
-- [Çevre Değişkenleri](#çevre-değişkenleri)
-- [Yararlı Docker Komutları](#yararlı-docker-komutları)
-- [Sorun Giderme](#sorun-giderme)
-
-## 🔧 Gereksinimler
-
-- Docker Engine (20.10.0+)
-- Docker Compose (2.0.0+)
-- En az 2GB RAM
-
-## 🚀 Kurulum
-
-1. Repository'yi klonlayın veya `docker-compose.yml` dosyasını bilgisayarınıza indirin.
-2. Terminal veya komut istemcisini açın ve dosyanın bulunduğu dizine gidin.
-3. Aşağıdaki komutu çalıştırın:
-
+1. Start the container:
 ```bash
-docker compose up -d
+docker-compose up -d
 ```
 
-## 🏷️ SQL Server Sürümleri
+2. Connect to SQL Server:
+- Server: localhost,1433
+- User: sa
+- Password: YourStrong@Passw0rd
 
-Bu proje SQL Server 2019 kullanmaktadır. Docker Hub'da bulunan önemli MS SQL etiketleri:
+## Environment Variables
 
-| Etiket | Açıklama |
-|--------|----------|
-| `2022-latest` | SQL Server 2022 (en yeni sürüm) |
-| `2019-latest` | SQL Server 2019 (bu projede kullanılan) |
-| `2017-latest` | SQL Server 2017 |
-| `2019-CU18-ubuntu-20.04` | Belirli bir Cumulative Update ile 2019 |
-| `2019-GDR-ubuntu-20.04` | Security update paketi içeren 2019 |
+Key environment variables used in this setup:
 
-## 🔌 Bağlantı Bilgileri
+| Variable | Description | Value |
+|----------|-------------|--------|
+| ACCEPT_EULA | Accept the End-User License Agreement | Y |
+| SA_PASSWORD | System Administrator (SA) password | YourStrong@Passw0rd |
+| MSSQL_PID | SQL Server Edition | Developer (default) |
 
-SQL Server'a bağlanmak için:
+## Container Details
 
-- **Server**: `localhost,1433`
-- **Authentication**: SQL Server Authentication
-- **Username**: `sa`
-- **Password**: `YourStrong@Passw0rd`
+- Image: mcr.microsoft.com/mssql/server:2019-latest
+- Port: 1433
+- Persistent Storage: Volume mounted at /var/opt/mssql
 
-Bağlantı için kullanabileceğiniz araçlar:
-- SQL Server Management Studio (SSMS)
-- Azure Data Studio
-- Visual Studio Code (mssql eklentisi ile)
-- DBeaver veya başka bir SQL istemcisi
+## Requirements
 
-## 💾 Volume Yönetimi
+- Docker
+- Docker Compose
+- Minimum 2GB of RAM allocated to Docker
 
-Veritabanı dosyaları `mssql_data` adlı Docker volume'ünde saklanır. Volume bilgilerini görmek için:
+## Common Commands
 
 ```bash
-docker volume inspect mssql_data
+# Start container
+docker-compose up -d
+
+# Stop container
+docker-compose down
+
+# View logs
+docker-compose logs mssql
+
+# Connect to container
+docker exec -it mssql_server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd
 ```
 
-Volume içeriğine erişmek için:
+## Notes
 
-```bash
-docker exec -it mssql_server bash
-cd /var/opt/mssql
-ls -la
-```
-
-## 🔐 Çevre Değişkenleri
-
-| Değişken | Açıklama | Değer |
-|----------|----------|-------|
-| `ACCEPT_EULA` | Lisans anlaşmasını kabul etmek için gerekli | `Y` |
-| `SA_PASSWORD` | System Administrator şifresi | `YourStrong@Passw0rd` |
-
-Ek çevre değişkenleri (isteğe bağlı):
-- `MSSQL_PID`: Ürün sürümü (Developer, Express, Standard, Enterprise, vb.)
-- `MSSQL_MEMORY_LIMIT_MB`: Maksimum bellek kullanımı
-- `MSSQL_BACKUP_DIR`: Yedekleme dizini
-- `MSSQL_DATA_DIR`: Veri dosyaları dizini
-- `MSSQL_LOG_DIR`: Log dosyaları dizini
-
-## 🐳 Yararlı Docker Komutları
-
-```bash
-# Container'ı başlatma
-docker compose up -d
-
-# Container'ı durdurma
-docker compose down
-
-# Container loglarını görüntüleme
-docker logs mssql_server
-
-# Container'a bağlanma
-docker exec -it mssql_server bash
-
-# SQL Server durumunu kontrol etme (container içinde)
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "SELECT @@VERSION"
-```
-
-## ⚠️ Sorun Giderme
-
-- **Bağlantı Hataları**: Port çakışması olmadığından emin olun.
-- **Container Başlamıyor**: Bellek gereksinimleri karşılandığından emin olun (min. 2GB).
-- **Şifre Hatası**: SA şifresi en az 8 karakter olmalı ve büyük harf, küçük harf, sayı ve özel karakter içermelidir.
-- **Yetki Sorunları**: Windows'ta Docker Desktop'ın dosya paylaşım izinlerini kontrol edin.
-
----
-
-📚 **Referanslar**
-- [Microsoft SQL Server on Docker Hub](https://hub.docker.com/_/microsoft-mssql-server)
-- [SQL Server Configuration for Docker](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables)
+- The SQL Server data is persisted using Docker volumes
+- Container automatically restarts unless manually stopped
+- Default port 1433 must be available on host machine
