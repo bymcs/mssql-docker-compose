@@ -49,7 +49,7 @@ docker-compose down
 docker-compose logs mssql
 
 # Connect to container
-docker exec -it mssql_server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd
+docker exec -it mssql_server /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -N -C
 ```
 
 ## Notes
